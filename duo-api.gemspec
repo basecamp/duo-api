@@ -1,11 +1,11 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'duo/api/version'
+require 'duo-api/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "duo-api"
-  spec.version       = Duo::Api::VERSION
+  spec.version       = DuoApi::VERSION
   spec.authors       = ["Jon Phenow"]
   spec.email         = ["j.phenow@gmail.com"]
 

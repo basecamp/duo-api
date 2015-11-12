@@ -1,6 +1,8 @@
 require "duo-api/util"
 require "duo-api/digesting"
 
+# Parts of this code were derived from https://github.com/duosecurity/duo_ruby
+# For Licensing see https://github.com/highrisehq/duo-api/blob/master/Duo-License
 module DuoApi
   class Signature
     extend Util
@@ -14,18 +16,10 @@ module DuoApi
     DUO_EXPIRE = 300
     APP_EXPIRE = 3600
 
-    IKEY_LEN = 20
-    SKEY_LEN = 40
-    AKEY_LEN = 40
-
-    ERR_USER = error_with_message('The user_key passed to sign is invalid.')
-    ERR_IKEY = error_with_message('The Duo integration key passed is invalid.')
-    ERR_SKEY = error_with_message('The Duo secret key is invalid.')
-    ERR_AKEY = error_with_message("The application secret key must be at least #{AKEY_LEN} characters.")
+    ERR_USER = error_with_message('The user_key passed to sign with is invalid.')
 
     def self.sign(user_key)
       raise ERR_USER if !user_key || user_key.to_s.length == 0 if user_key.include?('|')
-      raise ERR_AKEY if !config.app_secret || config.app_secret.to_s.length < AKEY_LEN
 
       vals = [user_key.to_s, config.integration_key]
 

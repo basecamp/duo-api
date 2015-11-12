@@ -34,7 +34,7 @@ DuoApi.config do |config|
   config.secret_key = "asdf"
 
   # ONLY for Duo Web
-  # Generate a 40 character+ secret token.
+  # Generate a somewhat long secret token (40+ characters).
   # If you're using Rails, `Rails.application.secret_token` should suffice
   # can also run `duo-api generate_app_key
   config.app_key = "Long app secret"
