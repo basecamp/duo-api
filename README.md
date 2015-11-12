@@ -41,7 +41,15 @@ DuoApi.config do |config|
 end
 ```
 
-For Rails this would go in something like `config/initializers/duo.rb`
+For Rails this would go in something like `config/initializers/duo.rb`.
+Keep in mind, you likely don't want to store these keys in your repository.
+
+### Configuration Caveat
+
+Upon completion of the general features we noticed that Duo needs separate
+credentials for different APIs. This config is currently Global. We (or someone)
+should be adding a way to switch between credentials or perhaps it would be best
+to initialize a Client class for each credential set
 
 ## Usage
 
