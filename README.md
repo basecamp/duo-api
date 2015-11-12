@@ -1,5 +1,6 @@
 # DuoApi
 
+A thin, zero depedency library for connecting to the Duo Auth API.
 
 ## Installation
 
@@ -11,13 +12,58 @@ gem 'duo-api'
 
 And then execute:
 
-    $ bundle
+```
+$ bundle
+```
 
 Or install it yourself as:
 
-    $ gem install duo-api
+```
+$ gem install duo-api
+```
+
+## Configuration
+
+During app initialization:
+```ruby
+require 'duo-api'
+DuoApi.config do |config|
+  # Found on Duo Admin panel for the application you've set up
+  config.hostname = "api-xxxxx.duosecurity.com"
+  config.integration_key = "asdf"
+  config.secret_key = "asdf"
+
+  # ONLY for Duo Web
+  # Generate a 40 character+ secret token.
+  # If you're using Rails, `Rails.application.secret_token` should suffice
+  # can also run `duo-api generate_app_key
+  config.app_key = "Long app secret"
+end
+```
+
+For Rails this would go in something like `config/initializers/duo.rb`
 
 ## Usage
+
+```ruby
+response = DuoApi.get("/auth/v2/check")
+response.success? # => true
+response.body["response"]["time"] # => 1357020061
+
+response = DuoApi.post("/auth/v2/preauth", :params => { :username => "jphenow" })
+response.success? # => true
+response.code # => "200"
+response.body["response"]["result"] # => "auth"
+response.message # => "Account is active"
+
+response = DuoApi.post("/auth/v2/preauth")
+response.success? # => false
+response.code # => "400"
+response.message # => "Missing required request parameters"
+```
+
+See the Duo [API documentation](https://www.duosecurity.com/docs/authapi) for a full list of
+available endpoints.
 
 
 ## Development
