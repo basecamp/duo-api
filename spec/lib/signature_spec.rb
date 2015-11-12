@@ -15,17 +15,19 @@ WRONG_PARAMS_APP = "APP|dGVzdHVzZXJ8RElYWFhYWFhYWFhYWFhYWFhYWFh8MTYxNTcyNzI0M3xp
 
 module DuoApi
   describe Signature do
-    before do
-      DuoApi.config do |config|
-        config.integration_key = IKEY
-        config.secret_key = SKEY
-        config.app_secret = AKEY
-      end
+    let(:integration_key) { IKEY }
+    let(:secret_key) { SKEY }
+    let(:app_secret) { AKEY }
+    let(:client) do
+      Client.new :integration_key => integration_key,
+        :secret_key => secret_key,
+        :app_secret => app_secret
     end
+    subject { described_class.new(client) }
 
     describe "#sign" do
       describe "valid keys" do
-        let(:signed_request) { DuoApi::Signature.sign(USER) }
+        let(:signed_request) { subject.sign(USER) }
 
         specify { expect(signed_request).to be_a(String) }
         specify { expect(signed_request).to_not be_empty }
@@ -33,38 +35,26 @@ module DuoApi
 
       describe "invalid keys" do
         describe "blank integration key" do
-          before do
-            DuoApi.config do |config|
-              config.integration_key = ""
-            end
-          end
+          let(:integration_key) { "" }
 
           it "throws error" do
-            expect { DuoApi::Signature.sign(USER) }.to raise_error(InvalidConfiguration)
+            expect { subject.sign(USER) }.to raise_error(InvalidConfiguration)
           end
         end
 
         describe "blank secret key" do
-          before do
-            DuoApi.config do |config|
-              config.secret_key = nil
-            end
-          end
+          let(:secret_key) { nil }
 
           it "throws error" do
-            expect { DuoApi::Signature.sign(USER) }.to raise_error(InvalidConfiguration)
+            expect { subject.sign(USER) }.to raise_error(InvalidConfiguration)
           end
         end
 
         describe "blank app secret" do
-          before do
-            DuoApi.config do |config|
-              config.secret_key = ""
-            end
-          end
+          let(:secret_key) { "" }
 
           it "throws error" do
-            expect { DuoApi::Signature.sign(USER) }.to raise_error(InvalidConfiguration)
+            expect { subject.sign(USER) }.to raise_error(InvalidConfiguration)
           end
         end
       end
@@ -72,38 +62,39 @@ module DuoApi
 
     describe "#verify" do
       describe "valid signature" do
-        let(:request_sig) { DuoApi.sign(USER) }
+        let(:request_sig) { subject.sign(USER) }
         let(:app_sig) { request_sig.to_s.split(':')[1] }
 
         it "is nil with invalid user" do
-          expect(Signature.verify("#{INVALID_RESPONSE}:#{app_sig}")).to be_nil
+          expect(subject.verify("#{INVALID_RESPONSE}:#{app_sig}")).to be_nil
         end
 
         it "is nil when expired" do
-          expect(Signature.verify("#{EXPIRED_RESPONSE}:#{app_sig}")).to be_nil
+          expect(subject.verify("#{EXPIRED_RESPONSE}:#{app_sig}")).to be_nil
         end
 
         it "is valid with future response" do
-          expect(Signature.verify("#{FUTURE_RESPONSE}:#{app_sig}")).to eq(USER)
+          expect(subject.verify("#{FUTURE_RESPONSE}:#{app_sig}")).to eq(USER)
         end
 
         it "is nil with wrong params" do
-          expect(Signature.verify("#{WRONG_PARAMS_RESPONSE}:#{app_sig}")).to be_nil
+          expect(subject.verify("#{WRONG_PARAMS_RESPONSE}:#{app_sig}")).to be_nil
         end
       end
 
       describe "invalid signature" do
         it "is nil with unmatching app signature" do
-          request_sig = DuoApi.sign(USER)
+          request_sig = subject.sign(USER)
           app_sig = request_sig.to_s.split(':')[1]
 
-          DuoApi.config { |config| config.app_secret = "invalid" * 6 }
+          new_client = client.tap { |client| client.app_secret = "invalid" * 6 }
+          new_signer = described_class.new(client)
 
-          expect(Signature.verify("#{FUTURE_RESPONSE}:#{app_sig}")).to be_nil
+          expect(new_signer.verify("#{FUTURE_RESPONSE}:#{app_sig}")).to be_nil
         end
 
         it "is nil with wrong params for app" do
-          expect(Signature.verify("#{FUTURE_RESPONSE}:#{WRONG_PARAMS_APP}")).to be_nil
+          expect(subject.verify("#{FUTURE_RESPONSE}:#{WRONG_PARAMS_APP}")).to be_nil
         end
       end
     end

@@ -1,8 +1,11 @@
 require 'spec_helper'
 module DuoApi
   describe HeaderSignature do
+    let(:client) do
+      Client.new(:integration_key => "abc", :secret_key => "xyz", :hostname => "non-existent.example.com")
+    end
     subject do
-      described_class.new("GET", "/a/path", nil)
+      described_class.new(client, "GET", "/a/path", nil)
     end
 
     it "builds basic auth" do
