@@ -48,10 +48,8 @@ Keep in mind, you likely don't want to store these keys in your repository.
 
 ### Configuration Caveat
 
-Upon completion of the general features we noticed that Duo needs separate
-credentials for different APIs. This config is currently Global. We (or someone)
-should be adding a way to switch between credentials or perhaps it would be best
-to initialize a Client class for each credential set
+If you're using more than one Duo API, you may want to instead use DuoApi::Clients
+more directly. See usage below.
 
 ## Usage
 
@@ -75,6 +73,31 @@ response.message # => "Missing required request parameters"
 See the Duo [API documentation](https://www.duosecurity.com/docs/authapi) for a full list of
 available endpoints.
 
+### Client Usage
+
+If you're using more than one Duo API, you may want to instead use DuoApi::Clients
+more directly:
+
+```ruby
+client = DuoApi::Client.new :hostname => "api-xxxxx.duosecurity.com",
+  :integration_key => "asdf",
+  :secret_key => "asdf"
+
+response = client.get("/auth/v2/check")
+response.success? # => true
+response.body["response"]["time"] # => 1357020061
+
+response = client.post("/auth/v2/preauth", :params => { :username => "jphenow" })
+response.success? # => true
+response.code # => "200"
+response.body["response"]["result"] # => "auth"
+response.message # => "Account is active"
+
+response = client.post("/auth/v2/preauth")
+response.success? # => false
+response.code # => "400"
+response.message # => "Missing required request parameters"
+```
 
 ## Development
 

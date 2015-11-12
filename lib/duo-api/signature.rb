@@ -7,7 +7,8 @@ require "duo-api/digesting"
 module DuoApi
   class Signature
     extend Util
-    extend Digesting
+    include Util
+    include Digesting
 
     DUO_PREFIX  = 'TX'
     APP_PREFIX  = 'APP'
@@ -19,26 +20,32 @@ module DuoApi
 
     ERR_USER = error_with_message('The user_key passed to sign with is invalid.')
 
-    def self.sign(user_key)
+    attr_reader :client
+
+    def initialize(client)
+      @client = client
+    end
+
+    def sign(user_key)
       raise ERR_USER if !user_key || user_key.to_s.length == 0 if user_key.include?('|')
-      if config.integration_key.to_s.length == 0 ||
-          config.secret_key.to_s.length == 0 ||
-          config.app_secret.to_s.length == 0
+      if client.integration_key.to_s.length == 0 ||
+          client.secret_key.to_s.length == 0 ||
+          client.app_secret.to_s.length == 0
         raise InvalidConfiguration, "your DuoApi doesn't seem to be configured properly"
       end
 
-      vals = [user_key.to_s, config.integration_key]
+      vals = [user_key.to_s, client.integration_key]
 
-      duo_sig = sign_values(config.secret_key, vals, DUO_PREFIX, DUO_EXPIRE)
-      app_sig = sign_values(config.app_secret, vals, APP_PREFIX, APP_EXPIRE)
+      duo_sig = sign_values(client.secret_key, vals, DUO_PREFIX, DUO_EXPIRE)
+      app_sig = sign_values(client.app_secret, vals, APP_PREFIX, APP_EXPIRE)
 
       return [duo_sig, app_sig].join(':')
     end
 
-    def self.verify(signed_response)
+    def verify(signed_response)
       auth_sig, app_sig = signed_response.to_s.split(':')
-      auth_user = parse_vals(config.secret_key, auth_sig, AUTH_PREFIX)
-      app_user = parse_vals(config.app_secret, app_sig, APP_PREFIX)
+      auth_user = parse_vals(client.secret_key, auth_sig, AUTH_PREFIX)
+      app_user = parse_vals(client.app_secret, app_sig, APP_PREFIX)
 
       return nil if auth_user != app_user
 
@@ -47,7 +54,7 @@ module DuoApi
 
     private
 
-      def self.parse_vals(key, val, prefix)
+      def parse_vals(key, val, prefix)
         ts = Time.now.to_i
 
         parts = val.to_s.split('|')
@@ -66,14 +73,14 @@ module DuoApi
         return nil if cookie_parts.length != 3
         user, u_ikey, exp = cookie_parts
 
-        return nil if u_ikey != config.integration_key
+        return nil if u_ikey != client.integration_key
 
         return nil if ts >= exp.to_i
 
         return user
       end
 
-      def self.sign_values(key, values, prefix, expiration)
+      def sign_values(key, values, prefix, expiration)
         exp = Time.now.to_i + expiration
 
         val_list = values + [exp]

@@ -2,6 +2,9 @@ require 'spec_helper'
 
 module DuoApi
   describe Request do
+    let(:client) do
+      Client.new(:integration_key => "abc", :secret_key => "xyz", :hostname => "non-existent.example.com")
+    end
     describe ".request" do
       let(:instance) { double }
 
@@ -11,20 +14,21 @@ module DuoApi
 
       it "runs" do
         expect(Request).to receive(:new) { instance }.with(
+          an_instance_of(Client),
           nil,
-          DuoApi.config.hostname,
+          an_instance_of(String),
           "/auth/v2/check",
           nil,
           nil
         )
-        Request.request("/auth/v2/check")
+        Request.request(client, "/auth/v2/check")
       end
     end
 
     describe "a request instance" do
       describe "properties" do
         describe "with mostly nils" do
-          subject { Request.new(nil, DuoApi.config.hostname, "/a/path", nil, nil) }
+          subject { Request.new(client, nil, client.hostname, "/a/path", nil, nil) }
 
           it "defaults the method" do
             expect(subject.method).to eq("GET")
@@ -50,7 +54,7 @@ module DuoApi
 
         describe "with more options" do
           subject do
-            Request.new(:post, DuoApi.config.hostname, "/a/path", { :foo => :bar }, { "X-Cool" => true })
+            Request.new(client, :post, client.hostname, "/a/path", { :foo => :bar }, { "X-Cool" => true })
           end
 
           it "defaults the method" do
@@ -78,7 +82,7 @@ module DuoApi
 
         describe "get with params" do
           subject do
-            Request.new(:get, DuoApi.config.hostname, "/a/path", { :foo => :bar }, nil)
+            Request.new(client, :get, client.hostname, "/a/path", { :foo => :bar }, nil)
           end
           it "defaults query string" do
             expect(subject.query_string).to eq("foo=bar")

@@ -1,5 +1,5 @@
 require "duo-api/version"
-require "duo-api/configuration"
+require "duo-api/client"
 require "duo-api/signature"
 require "duo-api/request"
 
@@ -15,24 +15,31 @@ module DuoApi
   InvalidConfiguration = Class.new(StandardError)
 
   def self.config
-    @config ||= Configuration.new
+    @config ||= Client.new
     yield @config if block_given?
     @config
   end
-
-  def self.get(path, options = {})
-    Request.request(path, { :method => "GET" }.merge(options))
+  class << self
+    alias client config
   end
 
-  def self.post(path, options = {})
-    Request.request(path, { :method => "POST" }.merge(options))
+  def self.get(*args)
+    client.get(*args)
   end
 
-  def self.sign(user_key)
-    Signature.sign(user_key)
+  def self.post(*args)
+    client.post(*args)
   end
 
-  def self.verify(signed_response)
-    Signature.verify(signed_response)
+  def self.request(*args)
+    client.request(*args)
+  end
+
+  def self.sign(*args)
+    client.sign(*args)
+  end
+
+  def self.verify(*args)
+    client.verify(*args)
   end
 end

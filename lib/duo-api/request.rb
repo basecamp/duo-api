@@ -9,10 +9,10 @@ module DuoApi
     extend Util
     include Util
 
-    def self.request(path, options = {})
+    def self.request(client, path, options = {})
       options = stringify_hash(options)
-      hostname = options["hostname"] || DuoApi.config.hostname
-      instance = new(options["method"], hostname, path, options["params"], options["headers"])
+      hostname = options["hostname"] || client.hostname
+      instance = new(client, options["method"], hostname, path, options["params"], options["headers"])
       instance.run
     end
 
@@ -22,7 +22,7 @@ module DuoApi
     attr_reader :headers
     attr_reader :uri
 
-    def initialize(method, hostname, path, params, headers)
+    def initialize(client, method, hostname, path, params, headers)
       @method = method.to_s.upcase
       @method = "GET" if @method.length == 0
       hostname = hostname.to_s.downcase.sub(/\/\z/, "")
@@ -34,7 +34,7 @@ module DuoApi
         map {|k,v| "#{URI.encode(k.to_s)}=#{URI.encode(v.to_s)}" }.
         join("&")
 
-      @signature = HeaderSignature.new(method, path, query_string)
+      @signature = HeaderSignature.new(client, method, path, query_string)
 
       @headers = stringify_hash(headers)
       @headers["Date"] = signature.date_header

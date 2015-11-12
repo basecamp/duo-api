@@ -11,4 +11,7 @@ matrix:
       gemfile: gemfiles/Gemfile.18
     - rvm: ree
       gemfile: gemfiles/Gemfile.18
-
+notifications:
+  email:
+    recipients:
+      - jon@highrisehq.com

@@ -7,10 +7,6 @@ module DuoApi
       Hash[hash.map { |k, v| [k.to_s, v] }]
     end
 
-    def config
-      DuoApi.config
-    end
-
     def error_with_message(message)
       klass = Class.new(DuoApiError)
       klass.send :define_method, :initialize do |*msg|

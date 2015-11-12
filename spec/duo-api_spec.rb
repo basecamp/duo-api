@@ -26,14 +26,10 @@ describe DuoApi do
   end
 
   it "signs" do
-    expect(DuoApi::Signature).to receive(:sign).and_call_original
-
     expect(DuoApi.sign("jphenow")).to be_a String
   end
 
   it "verifies with Signature" do
-    expect(DuoApi::Signature).to receive(:verify).and_call_original
-
     expect(DuoApi.verify("jumbled-reponse")).to be_nil
   end
 end
