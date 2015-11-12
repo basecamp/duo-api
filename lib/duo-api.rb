@@ -3,6 +3,14 @@ require "duo-api/configuration"
 require "duo-api/signature"
 require "duo-api/request"
 
+if RUBY_VERSION =~ /1\.8/
+  begin
+    require "json"
+  rescue
+    raise "you need to install the json Gem for Ruby 1.8.7"
+  end
+end
+
 module DuoApi
   InvalidConfiguration = Class.new(StandardError)
 
