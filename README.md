@@ -22,6 +22,8 @@ Or install it yourself as:
 $ gem install duo-api
 ```
 
+If you're for some reason using REE or 1.8.7, you must also install the `json` Gem.
+
 ## Configuration
 
 During app initialization:
