@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 command = ARGV.first
-if command == "app_key"
+if command == "app_secret"
   require 'digest/sha1'
   puts Digest::SHA1.hexdigest((0...32).map { ('A'..'z').to_a[rand(52)] }.join)
 else
@@ -9,6 +9,6 @@ else
 Duo API helper
 
 Commands:
-\tapp_key\t\tGenerates a token to use for app_key in DuoApi configuration
+\tapp_secret\t\tGenerates a token to use for app_secret in DuoApi configuration
 S
 end

@@ -1,3 +1,4 @@
+require 'openssl'
 module DuoApi
   module Digesting
     DIGEST = OpenSSL::Digest.new("sha1")

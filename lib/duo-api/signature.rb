@@ -1,3 +1,4 @@
+require "base64"
 require "duo-api/util"
 require "duo-api/digesting"
 
@@ -20,6 +21,11 @@ module DuoApi
 
     def self.sign(user_key)
       raise ERR_USER if !user_key || user_key.to_s.length == 0 if user_key.include?('|')
+      if config.integration_key.to_s.length == 0 ||
+          config.secret_key.to_s.length == 0 ||
+          config.app_secret.to_s.length == 0
+        raise InvalidConfiguration, "your DuoApi doesn't seem to be configured properly"
+      end
 
       vals = [user_key.to_s, config.integration_key]
 

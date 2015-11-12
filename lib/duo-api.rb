@@ -4,6 +4,8 @@ require "duo-api/signature"
 require "duo-api/request"
 
 module DuoApi
+  InvalidConfiguration = Class.new(StandardError)
+
   def self.config
     @config ||= Configuration.new
     yield @config if block_given?
