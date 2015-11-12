@@ -1,6 +1,6 @@
 # DuoApi [![Build Status](https://travis-ci.org/highrisehq/duo-api.svg)](https://travis-ci.org/highrisehq/duo-api)
 
-A thin, zero depedency library for connecting to the Duo Auth API.
+A thin, zero depedency library for connecting to the [Duo](https://www.duosecurity.com/) API.
 
 ## Installation
 
