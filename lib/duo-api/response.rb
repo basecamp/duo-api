@@ -36,7 +36,7 @@ module DuoApi
     end
 
     def code
-      http_response.code
+      http_response.code.to_s
     end
 
     def raw_body

@@ -1,16 +1,15 @@
+require 'time'
 module DuoApi
   class HeaderSignature
     extend Util
     include Util
     include Digesting
 
-    attr_reader :hostname
     attr_reader :method
     attr_reader :path
     attr_reader :query_body_string
 
-    def initialize(hostname, method, path, query_body_string)
-      @hostname = hostname
+    def initialize(method, path, query_body_string)
       @method = method
       @path = path
       @query_body_string = query_body_string
@@ -36,6 +35,10 @@ module DuoApi
         components << path
         components << query_body_string
         components.join("\n")
+      end
+
+      def hostname
+        DuoApi.config.hostname
       end
   end
 end

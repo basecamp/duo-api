@@ -1,4 +1,5 @@
 require "net/http"
+require "time"
 require "duo-api/header_signature"
 require "duo-api/response"
 require "duo-api/util"
@@ -20,10 +21,10 @@ module DuoApi
     attr_reader :query_string
     attr_reader :headers
     attr_reader :uri
-    attr_reader :request
 
     def initialize(method, hostname, path, params, headers)
-      @method = method.to_s.upcase.presence || "GET"
+      @method = method.to_s.upcase
+      @method = "GET" if @method.length == 0
       hostname = hostname.to_s.downcase.sub(/\/\z/, "")
       path = "/#{path.to_s.sub(/\A\//, "")}"
 
@@ -33,12 +34,12 @@ module DuoApi
         map {|k,v| "#{URI.encode(k.to_s)}=#{URI.encode(v.to_s)}" }.
         join("&")
 
-      @signature = HeaderSignature.new(hostname, method, path, query_string)
+      @signature = HeaderSignature.new(method, path, query_string)
 
       @headers = stringify_hash(headers)
       @headers["Date"] = signature.date_header
 
-      uri_suffix = "?#{query_string}" if use_query_string? && params.present?
+      uri_suffix = "?#{query_string}" if use_query_string? && params.length > 0
       @uri = URI.parse("https://#{hostname}#{path}#{uri_suffix}")
     end
 
