@@ -53,6 +53,8 @@ more directly. See usage below.
 
 ## Usage
 
+For Duo Web documentation check out our [example](https://github.com/highrisehq/duo-api/wiki/Duo-Web-Example) in the wiki.
+
 ```ruby
 response = DuoApi.get("/auth/v2/check")
 response.success? # => true
