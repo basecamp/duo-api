@@ -73,7 +73,7 @@ module DuoApi
       def http
         @http ||= Net::HTTP.new(uri.host, uri.port).tap { |http|
           http.use_ssl = true
-          http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+          http.verify_mode = OpenSSL::SSL::VERIFY_PEER
         }
       end
 
