@@ -73,8 +73,13 @@ module DuoApi
       def http
         @http ||= Net::HTTP.new(uri.host, uri.port).tap { |http|
           http.use_ssl = true
-          http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+          http.ca_file = ca_certs_file
+          http.verify_mode = OpenSSL::SSL::VERIFY_PEER
         }
+      end
+
+      def ca_certs_file
+        File.join(File.dirname(__FILE__), "ca_certs.pem")
       end
 
       def use_query_string?
