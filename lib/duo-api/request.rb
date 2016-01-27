@@ -93,6 +93,8 @@ module DuoApi
           Net::HTTP::Get
         when "POST"
           Net::HTTP::Post
+        when "DELETE"
+          Net::HTTP::Delete
         end
       end
   end

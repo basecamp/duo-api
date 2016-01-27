@@ -25,6 +25,12 @@ describe DuoApi do
     DuoApi.post("/auth/v2/check")
   end
 
+  it "sends delete to Request" do
+    expect(DuoApi::Request).to receive(:request)
+
+    DuoApi.delete("/auth/v2/check")
+  end
+
   it "signs" do
     expect(DuoApi.sign("jphenow")).to be_a String
   end
