@@ -28,6 +28,10 @@ module DuoApi
       Request.request(self, path, { :method => "POST" }.merge(options))
     end
 
+    def delete(path, options = {})
+      Request.request(self, path, { :method => "DELETE" }.merge(options))
+    end
+
     def sign(user_key)
       signer.sign(user_key)
     end

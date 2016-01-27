@@ -31,6 +31,10 @@ module DuoApi
     client.post(*args)
   end
 
+  def self.delete(*args)
+    client.delete(*args)
+  end
+
   def self.request(*args)
     client.request(*args)
   end

@@ -1,5 +1,6 @@
 require "net/http"
 require "time"
+require "erb"
 require "duo-api/header_signature"
 require "duo-api/response"
 require "duo-api/util"
@@ -31,7 +32,7 @@ module DuoApi
       params = stringify_hash(params)
       @query_string = params.
         sort_by { |k| k }.
-        map {|k,v| "#{URI.encode(k.to_s)}=#{URI.encode(v.to_s)}" }.
+        map {|k,v| "#{ERB::Util.url_encode(k.to_s)}=#{ERB::Util.url_encode(v.to_s)}" }.
         join("&")
 
       @signature = HeaderSignature.new(client, method, path, query_string)
@@ -92,6 +93,8 @@ module DuoApi
           Net::HTTP::Get
         when "POST"
           Net::HTTP::Post
+        when "DELETE"
+          Net::HTTP::Delete
         end
       end
   end
